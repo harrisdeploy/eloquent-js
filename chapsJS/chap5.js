@@ -109,27 +109,34 @@ function dominantDirection(text) {
 		how?
 		
   */
-  let ltr, trl, ttb, i = 0;
+  //let ltr, trl, ttb, i = 0;
   /*
   while (i < text.length){
   	if (
   }*/
   //console.log(textScripts(text));
   let hello = countBy(text, char => {
+    //console.log(characterScript(char.codePointAt(0)));
 	let script = characterScript(char.codePointAt(0));
-	return script ? script.name : "none";
+	return script ? script.direction : "none";
   }).filter(({name}) => name != "none" );
   
-  
-  return console.log(hello);
+  /*let i = 0;
+  while (i < hello.length){
+  	if (
+  }
+  */
+    //console.log(characterScript(121));
+	//console.log(hello);
+  return hello.reduce((a, b) => {//console.log("a: " + a.count + "b: " + b.count);
+        return a.count > b.count ? a.name : b.name;},0);
+  //console.log(hello);
   //console.log(countBy([1, 2, 3, 4, 5], n => n > 2));
 
-  //console.log(characterScript(121));
 }
 
-//console.log(dominantDirection("Hello!"));
+console.log(dominantDirection("Hello!"));
 // → ltr
 
 console.log(dominantDirection("Hey, مساء الخير"));
 // → rtl
-
