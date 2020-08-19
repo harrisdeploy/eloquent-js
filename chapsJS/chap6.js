@@ -37,9 +37,47 @@ Methods:
   let coolHarris = {};
   
   speak.call(coolHarris, "Yo, I am cool", "cool");
-  //another, explicit way of using the function's '.call' method for
-  //sending the '.this' parameter - will
-  //automatically take the available parameters ^^
+  //another, explicit way of using the function's '.call' method for sending the '.this' parameter
+  //will automatically take the available parameters ^^
+  
+Prototypes:
+  - Every Object (even functions, arrays etc) has a 'prototype' Object as a backup, alongside its
+    usual properties, with its own 'prototype' properties
+    
+  console.log(Object.getPrototypeOf(Function.prototype) == Object.prototype); //true
+  console.log(Object.getPrototypeOf(Math.max) == Function.prototype);
+  
+  - Can use 'Object.create' to either set or create prototypes to our Objects and hence we can use
+    this for Javascript Classes...
+
+Classes:
+  - A Class defines the shape of a TYPE of object (methods/properties it has) which is an 'Instance'
+    of the Class
+  - Hence Prototypes are the Javascript means we use to create Classes, creating instances of the
+    same Class which share the same methods (hence same values)
+  - But need to make sure you're creating it in the right fashion, has the right properties that
+    instances of this Class are supposed to have, leading to Constructor functions...
+    
+    
+Constructors:
+
+  let protoHarris = {
+    speak(line){
+      console.log(`Hi, I am ${this.type} Harris, says '${line}'`);
+    }
+  }
+
+  function makeHarris(type) {
+    let harris = Object.create(protoHarris);
+    harris.type = type;
+    return harris;
+  }
+  
+  let coolHarris = makeHarris("cool");
+  
+  - Javascript has its own method, less cumbersome as the above ^:
+  
+
   
   
   
