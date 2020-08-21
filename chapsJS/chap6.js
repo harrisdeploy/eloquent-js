@@ -51,19 +51,17 @@ Prototypes:
     this for Javascript Classes...
 
 Classes:
-  - A Class defines the shape of a TYPE of object (methods/properties it has) which is an 'Instance'
-    of the Class
+  - A Class defines the shape of a TYPE of object (methods/properties it has) which is an 'Instance' of the Class
   - Hence Prototypes are the Javascript means we use to create Classes, creating instances of the
     same Class which share the same methods (hence same values)
   - But need to make sure you're creating it in the right fashion, has the right properties that
     instances of this Class are supposed to have, leading to Constructor functions...
     
-    
 Constructors:
 
   let protoHarris = {
     speak(line){
-      console.log(`Hi, I am ${this.type} Harris, says '${line}'`);
+      console.log(`Hi, I am ${this.type} Harris, and I say '${line}'`);
     }
   }
 
@@ -73,11 +71,43 @@ Constructors:
     return harris;
   }
   
-  let coolHarris = makeHarris("cool");
+  let coolHarris = makeHarris("cool").speak("Yo!");
   
-  - Javascript has its own method, less cumbersome as the above ^:
+  - Javascript has a way to make defining the Constructor function easier
+  - If you put the keyword 'new' in front of a function call, the function is treated as a constructor
+  - Constructors are always Capitalised
   
+  function Harris(type){
+    this.type = type;
+  }
+  Harris.prototype.speak = function(line){
+    console.log(`The ${this.type} harris says '${line}'`);
+  };
+  
+  let weirdHarris = new Harris("weird");
+  weirdHarris.speak("I think JS is an alright language"); //woah, weirdo!
+  
+  
+Class Notation (how to write Classes after 2015):
 
+  class Harris(){ //class keyword allows us to define (only methods, not non-function values)
+                  //methods in one place
+    constructor(type){ //the constructor method is special, provides the actual Constructor
+      this.type = type;//function as before
+
+    }
+    speak(line) {
+      console.log(`The ${type} harris says '${line}'`);
+    }
+  }
+
+  let killerHarris = new Harris("killer");
+  killerHarris.speak("roar!"); //The killer harris says 'roar!'
+  
+  - You can override prototype properties during the Object instance
+  
+  
+  
   
   
   
