@@ -104,18 +104,22 @@ Class Notation (how to write Classes after 2015):
   let killerHarris = new Harris("killer");
   killerHarris.speak("roar!"); //The killer harris says 'roar!'
   
-  - You can override prototype properties during the Object instance
+  - You can override prototype properties during the Object instance: "overriding can be used to express exceptional properties in instances of a more generic class of objects, while letting the nonexceptional objects take a standard value from their prototype"
   
+  - 'map' isn't just a higher function but also a data structure where it associates values (keys) with other values, however due to Object.prototype.values, other 'keys' become apparent and hence it defeats the purpose
   
+  console.log("Is toString's age known?", "toString" in ages);
+  // → Is toString's age known? true
   
+  To solve this, you can use Object.create(null) or better yet the JS inbuilt 'new Map' class instead
   
+Polymorphism
+  - When a piece of code is written to work with objects of a certain kind of interface
+  - JS For/of loop earlier showcased how you could use the loop amongst different data structures by expecting a certain kind of interface across them all
+  - We can try to employ this for our own too, but first Symbols...
   
-  
-  
-  
-  
-  
-  
+Symbols
+  - Though property names are usually strings, they can also be Symbols, which are basically unique values created with the Symbol("my string") function and the "my string" value is merely used as an identifier, you can have the same strings for different Symbol unique values for example
   
   
   
