@@ -58,7 +58,6 @@ Classes:
     instances of this Class are supposed to have, leading to Constructor functions...
     
 Constructors:
-
   let protoHarris = {
     speak(line){
       console.log(`Hi, I am ${this.type} Harris, and I say '${line}'`);
@@ -89,12 +88,10 @@ Constructors:
   
   
 Class Notation (how to write Classes after 2015):
-
   class Harris(){ //class keyword allows us to define (only methods, not non-function values)
                   //methods in one place
     constructor(type){ //the constructor method is special, provides the actual Constructor
       this.type = type;//function as before
-
     }
     speak(line) {
       console.log(`The ${type} harris says '${line}'`);
@@ -113,17 +110,61 @@ Class Notation (how to write Classes after 2015):
   
   To solve this, you can use Object.create(null) or better yet the JS inbuilt 'new Map' class instead
   
-Polymorphism
+Polymorphism:
   - When a piece of code is written to work with objects of a certain kind of interface
   - JS For/of loop earlier showcased how you could use the loop amongst different data structures by expecting a certain kind of interface across them all
   - We can try to employ this for our own too, but first Symbols...
   
-Symbols
+Symbols:
   - Though property names are usually strings, they can also be Symbols, which are basically unique values created with the Symbol("my string") function and the "my string" value is merely used as an identifier, you can have the same strings for different Symbol unique values for example
+  - This helps with creating suitable property names in all kinds of interfaces that won't conflict with any other kinds (even if they have the same name)
+  - All sorts of fascinating usage, such as putting the Symbol inside an Array/Object and taking it out while still totally unique (avoiding mix up)
   
   
+The Iterator Interface:
+  - The object given to a for/of loop is expected to be iterable (polymorphism), its interface has method expected...
+  - Which is Symbol.iterator symbol (a symbol value within every obj/arr/fn.prototype)
+  - An iterator works by creating a secondary copy of the original obj/arr/fn
   
+  let hello = ["15", "20"];
+  let helloIterator = hello[Symbol.iterator];
+  console.log(helloIterator.next()); //{value: "15", done: false}
   
+  for (let letter of helloIterator){
+    console.log(letter); //15, 20
+  }
+  
+  Creating an iterator data structure - Matrix (2 dimensional Array)
+  
+  Getters, setters, and statics
+
+  - Though interfaces mostly hold functional methods, can also hold non-functional methods to show or set values of the object
+  
+class Temperature {
+  constructor(celsius){
+    this.celsius = celsius;
+  }
+  get fahrenheit() { //Getters
+    return this.celsius = * 1.8 + 32; //remember how 'this' is the Object's own parameter
+  }
+  set fahrenheit(value) { //Setter,
+//note it's the exact same method as 'get' but demands a 'value' so hence its difference
+    this.celsius = (value-32) / 1.8;
+  }
+  static fromFahrenheit(value){ //Static, unchanging, only stored in the Constructor and
+//NOT the actual Instance, useful because we can utilise it as a reliable method everytime
+    return new Temperature((value-32)/1.8);
+  }
+}
+let temp = new Temperature(22);
+console.log(temp.fahrenheit) //71.6
+console.log(temp.celsius); //22 remember that .celsius is only via this.celsius and it
+// only holds celsius all around (fahrenheit is instead converted everytime)
+
+temp.fahrenheit = 86; console.log(temp.fahrenheit); //86 console.log(temp.celsius); //30
+//this.celsius = (value-32) / 1.8; -> 86-32 = 54, 54/1.8 = 30
+  
+Inheritance:
   
   
   
