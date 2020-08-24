@@ -146,9 +146,11 @@ class Temperature {
   }
   get fahrenheit() { //Getters
     return this.celsius = * 1.8 + 32; //remember how 'this' is the Object's own parameter
+    //HAS TO RETURN SOMETHING
   }
   set fahrenheit(value) { //Setter,
 //note it's the exact same method as 'get' but demands a 'value' so hence its difference
+//DOES NOT RETURN
     this.celsius = (value-32) / 1.8;
   }
   static fromFahrenheit(value){ //Static, unchanging, only stored in the Constructor and
@@ -165,8 +167,39 @@ temp.fahrenheit = 86; console.log(temp.fahrenheit); //86 console.log(temp.celsiu
 //this.celsius = (value-32) / 1.8; -> 86-32 = 54, 54/1.8 = 30
   
 Inheritance:
-
   - JS allows you to create ('extends') a new (subclass) Class from copying another old Class (superclass)and adjust it
+  
+  - While useful, slightly controversial as rather than seperating objects, it ties them together, need to know of previous classes inheriting from
+  
+  - need to call super constructor to initialise the copied Class, since if want to behave similarly, need the same constructor too right?
+  
+  - super methods of the superclass inside the subclass can do too, if we want to use the original methods and even change them in this cloned Class
+  
+  
+  
+class Fridge extends Temperature {
+  constructor(celsius){
+    super(celsius);
+  }
+  
+  set fahrenheit(value) {
+    super.fahrenheit =  value;
+  } //prev set fahrenheit was designed this way as 'fahrenheit = value'
+  	//hence gotta do so in this style
+  
+}
+
+let fridgeTempStuff = new Fridge(30);
+
+fridgeTempStuff.fahrenheit = 30;
+
+console.log(fridgeTempStuff.fahrenheit =40); //40
+  
+  
+The instanceof operator:
+console.log(new Fridge  instanceof Temperature); //true
+console.log([1] instanceof Array); //true
+
   
   
   
@@ -189,6 +222,7 @@ A vector type:
 
 
 // Your code here.
+//Bismillah
 class Vec {
   constructor (x,y) {
     this.x = x;
