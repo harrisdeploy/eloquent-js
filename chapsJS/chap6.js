@@ -266,3 +266,82 @@ console.log(new Vec(1, 2).minus(new Vec(2, 3)));
 
 console.log(new Vec(3, 4).length);
 // → 5
+
+
+Groups:
+
+class Group {
+  // Your code here.
+  constructor(/*value*/){
+    let group = [];
+    this.group = group; /*value;*/ //creates an empty group
+    //.this referring to the object itself
+    //console.log(this.group);
+    
+  }
+  add(value){ //adds value to group if it isn't already
+    for (let element of this.group){
+      if (value === element){
+        return console.log(`${value} already here`);
+      }
+    }
+    this.group.push(value);
+    //console.log(`${value} added to  ${this.group}`);
+  }
+  
+  static from(objectValue){ //takes an iterable object as argument
+  	let i = 0, group = [], group2 = new Group;
+    this.group = group;
+//    console.log(this.group);
+    for (let element of objectValue){
+//      this.group.push(element);
+      group2.add(element);
+//      console.log(element);
+//      console.log(this.group);
+    }
+    return group2;//new Group(this.group);
+  
+  }				 //creates a group containing all the values produced
+  				 //by iterating over it
+  show (){
+    for (let element of this.group){
+      console.log(element);
+    }
+  }
+  delete(value){ //removes its argument from group if it is there
+    console.log(this.group);
+    for (let element of this.group){
+      if (value === element){
+        //this.group.pop(value); //wrong, just deletes last element
+        let index = this.group.indexOf(element);
+        this.group.splice(index, 1);
+        return console.log(`${value} at ${index} in group: ${this.group} is deleted`);
+      }
+    }
+    console.log(`${value} not in ${this.group}`);
+  }
+  has(value){ //returns boolean true/false
+    console.log(`group is: ${this.group}`);
+    for (let element of this.group){
+      if (element === value){
+        console.log(`element: ${element} value: ${value}`);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+}
+
+
+let group = Group.from([10, 20]);
+console.log(group.has(10));
+// → true
+console.log(group.has(30));
+// → false
+group.add(10);
+group.delete(10);
+console.log(group.has(10));
+// → false
+
+
