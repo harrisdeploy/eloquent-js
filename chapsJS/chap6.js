@@ -345,3 +345,92 @@ console.log(group.has(10));
 // → false
 
 
+Iterable Groups:
+class Group {
+  constructor() {
+    let group = [];
+    this.group = group;
+  }
+  
+  add(value) {
+    for (let element of this.group) {
+      if (value === element) {
+        return console.log(`${value} already here`);
+      }
+    }
+    this.group.push(value);
+  }
+  delete(value) {
+    for (let element of this.group) {
+      if (value === element){
+        let index = this.group.indexOf(element);
+        this.group.splice(index, 1);
+      }
+    }
+  }
+  has(value){
+    for (let element of this.group){
+      if (element === value){
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  static from(objectValue) {
+  	let i = 0, group = [], group2 = new Group;
+    this.group = group;
+    for (let element of objectValue){
+      group2.add(element);
+    }
+ //   console.log(`group2: ${group2}`);
+    return group2;
+  }
+}
+
+class GroupIterator {
+  constructor(group) {
+   // console.log(`constructor: ${group.group}`);
+    this.group = group.group;
+    this.i = 0;
+  }
+  next() {
+    
+   // console.log("next()");
+    /*
+    console.log(this.group[this.i]);
+          console.log(`this.group.length: ${this.group.length} ` +
+	              `this.group[this.i]: ${this.group[this.i]} `+
+                  `this.i: ${this.i} `
+      );
+    */
+    if (this.i < this.group.length){
+      let value = this.group[this.i];
+      this.i++;
+      return {value};
+    }
+  }
+}
+  
+  
+  
+  
+  
+Group.prototype[Symbol.iterator] = function() {
+  /*
+  console.log("hello");
+  console.log("hello2");
+  */
+  return new GroupIterator(this);
+};
+/*
+console.log(Group.from(["a", "b", "c"]));
+console.log("what");
+*/
+for (let value of Group.from(["a", "b", "c"])) {
+  console.log(value);
+}
+
+// → a
+// → b
+// → c
