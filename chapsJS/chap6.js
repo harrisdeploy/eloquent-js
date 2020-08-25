@@ -395,20 +395,22 @@ class GroupIterator {
     this.i = 0;
   }
   next() {
-    
    // console.log("next()");
+    
+    //console.log(this.group[this.i]);
     /*
-    console.log(this.group[this.i]);
           console.log(`this.group.length: ${this.group.length} ` +
 	              `this.group[this.i]: ${this.group[this.i]} `+
                   `this.i: ${this.i} `
       );
-    */
+     */
     if (this.i < this.group.length){
       let value = this.group[this.i];
       this.i++;
-      return {value};
+      //console.log(value);
+      return {value, done: false};
     }
+    return {done: true};
   }
 }
   
