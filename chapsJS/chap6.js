@@ -436,3 +436,16 @@ for (let value of Group.from(["a", "b", "c"])) {
 // → a
 // → b
 // → c
+
+Borrowing a method:
+
+let map = {one: true, two: true, hasOwnProperty: true};
+
+// Fix this call
+//MINE
+console.log(hasOwnProperty.call(map, "one"));
+//OFFICIAL
+console.log(Object.prototype.hasOwnProperty.call(map, "one"));
+
+console.log(map.hasOwnProperty("one"));
+// → true
