@@ -310,5 +310,112 @@ function routeRobot(state, memory) {
 
 //Proven faster: will take a maximum 26 turns (twice the actual route itself (13)
 
-/*Pathfinding:
+/*
+Pathfinding:
 
+Need a better method, a 'route-finding' function, finding a route through a graph is a typical 'search problem'
+
+Number of possible routes through a graph is infinite, but when searching for a route from A to B, only interested in ones starting at A. Also avoiding routes that visit the same place twice, hence we cut down the number of routes that the route finder has to consider further.
+
+Largely interested in the 'shortest route'. Visualised, our algorithm could be 'growing' routes from the starting point, exploring every reachable place that hasn't been visited yet, until a route fits the goal. Hence the robot will only explore the relevant (shortest) routes.
+
+Has to be done in the right order too, first places need to be explored first.
+
+Hence function keeps a 'work list', array of places that should be explored next, along with the route that just got us there, starts with start position and empty route.
+
+
+
+*/
+
+function findRoute(graph, from, to) {
+  //i.e. findRoute(roadGraph, this.place, parcel.place)
+  //(or parcel.address if wanna deliver))
+  
+  let work = [{at: from, route: []}];
+  //work list, array of places that should be explored next, along with the route that got us there
+  //starts initial with start pos and empty route
+  for (let i = 0; i < work.length; i++) {
+    let {at, route} = work[i];
+    //i.e. the 'from' and []
+    for (let place of graph[at]) {
+      //
+      if (place == to) return route.concat(place);
+      if (!work.some(w => w.at == place)) {
+//.some method returns true IF at least one passes test (at least one w.at == place)
+//so if there is NO w.at == place
+        work.push({at: place, route: route.concat(place)});
+      }
+      
+    }
+  }
+}
+
+runRobot/*Animation*/(VillageState.random(),
+                  goalOrientedRobot, []);
+                  
+runRobot(state, robot, memory);
+
+function findRoute(graph, from, to) {
+  let work = [{at: from, route: []}];
+  for (let i = 0; i < work.length; i++) {
+    let {at, route} = work[i];
+    //console.log(`let
+    for (let place of graph[at]) {
+      console.log(graph[at]);
+      if (place == to) {
+        console.log(`place: ${place} == to: ${to}`+
+                    ` return route.concat(place)`);
+		return route.concat(place);
+      }
+      if (!work.some(w => w.at == place)) {
+        console.log(`work.at: ${JSON.stringify(work.at)} != place: ${place}`+
+                    ` return route.concat(place)`);
+        work.push({at: place, route: route.concat(place)});
+      }
+    }
+  }
+}
+
+console.log(findRoute(roadGraph, "Alice's House", "Shop"));
+
+
+
+Questions:
+
+
+function compareRobots(robot1, memory1, robot2, memory2) {
+  // Your code here
+  function runRobot(state, robot, memory) {
+  for (let turn = 0;; turn++) {
+    if (state.parcels.length == 0) {
+      return turn;
+      break;
+    }
+    let action = robot(state, memory);
+//See, just the state and memory into robot
+    state = state.move(action.direction);
+    memory = action.memory;
+    console.log(`Moved to ${action.direction}`);
+  }
+}
+  //route robo
+  let robot1Count = 0, robot2Count = 0, i = 0;
+  
+  for (i = 0; i < 100; i++) {
+    let myVillage = VillageState.random(); //new Object no?
+  //  console.log(`myVillage: ${myVillage}`);
+	robot1Count = runRobot(myVillage, robot1, memory1) + robot1Count;
+	robot2Count = runRobot(myVillage, robot2, memory2) + robot2Count;
+  }
+  let robot1CountAverage = robot1Count/i;
+  console.log(robot1CountAverage);
+  let robot2CountAverage = robot2Count/i;
+  console.log(`robot1CountAverage: ${robot1CountAverage}`+
+              ` and robot2CountAverage: ${robot2CountAverage}`);
+}
+
+compareRobots(routeRobot, [], goalOrientedRobot, []);
+//  let myVillage = VillageState.random(); //new Object no?
+//console.log(myVillage);
+
+//console.log(runRobot(myVillage, routeRobot, []));
