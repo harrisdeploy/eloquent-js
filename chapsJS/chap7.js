@@ -31,7 +31,7 @@ function buildGraph(edges) {
   function addEdge(from, to) {
 //literally adding an edge to graph
     if (graph[from] == null){
-      graph[from] == [to];
+      graph[from] = [to];
     } else {
       graph[from].push(to);
     }
@@ -287,7 +287,7 @@ runRobot(VillageState.random(), randomRobot);
 /*
 The Mail Truck’s Route:
 
-Inspired from a real life mail delivery technique, find a route that passes all places in the village
+Inspired from a real life mail delivery technique, find a route that passes all places in the village (STARTING from the Post Office)
 */
 
 const mailRoute = [
@@ -306,9 +306,13 @@ function routeRobot(state, memory) {
   }
   return {direction: memory[0], memory: memory.slice(1)};
   //the direction chosen will be first one (Alice House) and then deleted via slice, since we're picking this one already
+  //remember, you're going to each location and the route is perfectly syncing up with the options, it's literally predefined, and hence with one choice done, the memory gets deleted and the next one is loaded. Subhanallah.
+  
+  //STARTING from the Post Office (hence synced)
+  
 }
 
-//Proven faster: will take a maximum 26 turns (twice the actual route itself (13)
+//Proven faster: will take a maximum 26 turns (twice the actual route itself (13 places, hence 26 to and fro)
 
 /*
 Pathfinding:
@@ -340,10 +344,12 @@ function findRoute(graph, from, to) {
     for (let place of graph[at]) {
       //
       if (place == to) return route.concat(place);
+      //this returns automatically the first time it finds the destination (i.e. place == to). so we could have started first with a location leading to a long route, why not compare the work[i].route.lengths? see which one has the smallest one and then return it
       if (!work.some(w => w.at == place)) {
 //.some method returns true IF at least one passes test (at least one w.at == place)
 //so if there is NO w.at == place
         work.push({at: place, route: route.concat(place)});
+        //work list has multople routes stored, UNTIL it finds one with place == to, which it automatically returns it then
       }
       
     }
@@ -382,6 +388,7 @@ console.log(findRoute(roadGraph, "Alice's House", "Shop"));
 
 Questions:
 
+Measuring a Robot:
 
 function compareRobots(robot1, memory1, robot2, memory2) {
   // Your code here
@@ -419,3 +426,64 @@ compareRobots(routeRobot, [], goalOrientedRobot, []);
 //console.log(myVillage);
 
 //console.log(runRobot(myVillage, routeRobot, []));
+
+
+Robot efficiency:
+
+/*
+function findRoute(graph, from, to) {
+  //i.e. findRoute(roadGraph, this.place, parcel.place)
+  //(or parcel.address if wanna deliver))
+  
+  let work = [{at: from, route: []}];
+  //work list, array of places that should be explored next, along with the route that got us there
+  //starts initial with start pos and empty route
+  for (let i = 0; i < work.length; i++) {
+    let {at, route} = work[i];
+    //i.e. the 'from' and []
+    let checker_array = []; let j = 0;
+    for (let place of graph[at]) {
+      if (place == to) {
+        checker_array[i] = true;
+      	route.concat(place);
+      }
+      //this returns automatically the first time it finds the destination (i.e. place == to). so we could have started first with a location leading to a long route, why not compare the work[i].route.lengths? see which one has the smallest one and then return it
+      if (!work.some(w => w.at == place)) {
+//.some method returns true IF at least one passes test (at least one w.at == place)
+//so if there is NO w.at == place
+		checker_array[i] = false;
+        work.push({at: place, route: route.concat(place)});
+        //work list has multople routes stored, UNTIL it finds one with place == to, which it automatically returns it then
+      }
+      
+    }
+  }
+}
+
+function goalOrientedRobot({place, parcels}, route) {
+  if (route.length == 0) {
+    let parcel = parcels[0];
+    if (parcel.place != place) {
+      route = findRoute(roadGraph, place, parcel.place);
+    } else {
+      route = findRoute(roadGraph, place, parcel.address);
+    }
+  }
+  return {direction: route[0], memory: route.slice(1)};
+}
+*/
+
+// Your code here
+function yourRobot({place, parcels}, route) {
+  if (route.length == 0) {
+    let parcel = parcels[0];
+    if (parcel.place != place) {
+      route = findRoute(roadGraph, place, parcel.place);
+    } else {
+      route = findRoute(roadGraph, place, parcel.address);
+    }
+  }
+  console.log(route);
+  return {direction: route[0], memory: route.slice(1)};
+}
+runRobotAnimation(VillageState.random(), yourRobot, []);
