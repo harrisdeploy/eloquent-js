@@ -1,5 +1,5 @@
 //Chapter 8 Bugs and Errors
-
+"use strict"
 /*
 
 Language:
@@ -136,7 +136,7 @@ Exceptions (exception handling):
   - When run into a problem, can 'raise' or 'throw' an exception, which can be any value
   - Exceptions are 'supercharged function returns', except they can also jump out of all its callers, all the way down to the first call that started the current execution  - 'unwinding the stack'
   - The power lies in setting 'obstacles' ALONG THE STACK to 'catch' the exception as it it's zooming down on it, once caught an exception you can do something with it to address the problem and continue the program
-  - Error handling only necessary at potential points of errors, see below look() doesn't have it whereas promptDirection() does
+  - Error handling is only necessary at potential points of errors, see below look() doesn't have it whereas promptDirection() does
 */
 
 function promptDirection(question) {
@@ -162,16 +162,230 @@ try { //try..catch block is specifically for error handling
 }
 
 /*STACK TRACE:
-  - (1) try
+  - (1) try {}
   - (2) look()
   - (3) promptDirection("Which way") -> Error thrown
 
-THEN thrown: 3 -> 2 -> 1 (catch-ed)
+THEN thrown: 3 -> 2 -> 1 (caught)
 
 Cleaning Up After Exceptions:
   - Effect of an exception is another kind of 'control flow', need to account for it, as every function call/property access might cause control to leave your code
-
+  - For example, the effects of a disrupted control flow would be there via an exception thrown (and the preceding code still ran or something)
 
 
 */
+
+const accounts = {
+  a:100,
+  b: 0,
+  c: 20
+};
+
+function getAccount() {
+  let accountName = prompt("Enter an account name");
+  if (!accounts.hasOwnProperty(accountName)) {
+//i.e. if the object doesn't have a property with that name (a, b, c etc)
+    throw new Error(`No such account: ${accountName}`);
+  }
+  return accountName;
+}
+
+function transfer(from, amount) {
+  if (accounts[from] < amount) return; //if there's not enough money in the account
+  accounts[from] -= amount;
+//It transfers money FIRST
+  accounts[getAccount()] += amount;
+//checks if there's an aacount SECOND
+//so if there's an error, and the entire code is stopped,
+//then the money gets transferred into nothing, hence control flow disrupted
+}
+
+/*
+  - A programming style that emphasises new values instead of changing existing data helps
+  - Can use the 'finally' in the 'try' statement we have, a finally block says, "no matter what happens, run this code after trying to run the code in the try block"
+*/
+
+function transfer(from, amount) {
+  if (accounts[from] < amount) return;
+  let progress = 0;
+  try {
+    accounts[from] -= amount;
+    progress = 1;
+    accounts[getAccount()] += amount;
+    progress = 2;
+  } finally {
+    if (progress == 1) {
+      accounts[from] += amount;
+    }//so if it didn't get run (progress = 2), then revert the money back
+  }
+}
+/*
+  - Even if an exception thrown in the try block, whilst finally code has run, finally doesn't interfere with the exception, stack continues unwinding
+  - Writing programs that operate reliably, though hard, is important - particularly how much damage your software will do when it fails
+  
+Selective Catching:
+  - An unhandled exception is one that makes it all the way to the bottom of the stack without being caught, hence by the environment (i.e. console)
+  - For unknown errors, unhandled exceptions is a reasonable way to signal a broken program and JS console will provide you information on it
+  - For KNOWN errors, expected to happen during routine use, need to be caught properly
+  - Don't blanket-catch exceptions unless purpose for 'routing' them over a network to signal a system crash
+  - But how do we selectively catch or identify specific exceptions? JS doesn't allow provide a nuanced direct approach to selectively catching exceptions, either you catch them all or none
+  - It can be tempting to assume that a specific try {} block is causing an exception but this needs proper data for identification
+*/
+
+for (;;) { //;; intentionally creates a loop that doesn't terminate on its own
+  try {
+    let dir = promtDirection"Where?"); //<- typo, will result in an 'undefined variable error'
+    console.log("You chose ", dir);
+    break;
+  } catch (e) { //however since catch {} ignores its exception value (e), wrongly assumes the problem is an invalid direction input
+    console.log("Not a valid direction. Try again");
+  } //hence stuck in an infinite loop and (e) gets buried
+} //time to define a new type of error and use instanceof to identify it
+
+class InputError extends Error {} //inherits Error constructor, which expects a string message as argument, InputError objects behave like Error objects except that they have a DIFFERENT CLASS by which we can recognise them and hence identify specific exceptions
+
+function promptDirection(question) {
+  let result = prompt(question);
+  if (result.toLowerCase() == "left") return "L";
+  if (result.toLowerCase() == "right") return "R";
+  throw new InputError("Invalid direction: " + result);
+}
+
+for (;;) {
+  try {
+    let dir = promptDirection("Where?");
+    console.log("You chose ", dir);
+    break;
+  } catch (e) {
+    if (e instanceof InputError) {
+      console.log("Now a valid direction. Try again");
+//hence will ONLY catch instances of InputError and let unrelated exceptions throw, if typo, then an undefined binding error (e) will properly be reported
+    } else {
+      throw e;
+    }
+  }
+}
+
+/*
+Assertions:
+  - Checks inside a program, to avoid silly mistakes, saves a LOT of time long run (TDD - Test Driven Development)
+*/
+
+function firstElement(array) {
+  if (array.length == 0) { //can't return if array is empty
+    throw new Error("firstElement called with []");
+  }//instead of getting a silent returning undefined, the assert will loudly blow up program
+  return array[0];
+}
+
+/*Summary:
+  - Implement above in your code from now on, TDD, error handling, "strict", special values returning, experiment with futureautomated test suits, get normal with console.logging constantly - Bismillah
+
+Exercises:
+Retry:
+*/
+
+class MultiplicatorUnitFailure extends Error {}
+
+function primitiveMultiply(a, b) {
+  if (Math.random() < 0.2) {
+    return a * b;
+  } else {
+    throw new MultiplicatorUnitFailure("Klunk");
+  }
+}
+
+function reliableMultiply(a, b) {
+  // Your code here.
+  let value = 0;// = 0;
+  try {
+    value = primitiveMultiply(a, b);// == "Klunk")
+   // if (Number.isNaN(value) return null;
+    //reliableMultiply(a, b);
+  //	console.log(`value is: ${value}`);
+  } catch (e) {
+    if (e.message == "Klunk") {
+//        	console.log(`value is: ${value}`);
+
+		return reliableMultiply(a, b);
+    	//console.log(e.message);
+    }
+  }
+//    	console.log(`value is: ${value}`);
+
+  return value;
+}
+//console.log(primitiveMultiply(8, 8));
+
+console.log(reliableMultiply(8, 8));
+// → 64
+
+
+//The Locked Box:
+const box = {
+  locked: true,
+  unlock() { this.locked = false; },
+  lock() { this.locked = true;  },
+  _content: [],
+  get content() {
+    if (this.locked) throw new Error("Locked!");
+    return this._content;
+  }
+};
+
+function withBoxUnlocked(body) {
+  // Your code here.
+  //draft
+  let unlocked = 0;
+  if (box.locked === false) { //it's unlocked
+    unlocked = 1;
+    console.log("it's unlocked");
+  }
+  box.unlock();
+  let value = 0;
+  try {
+      value = body();
+  } finally {
+    if (unlocked === 1) {
+      box.unlock();
+    }
+    else {
+      box.lock();
+    }
+  }
+
+  if (unlocked === 1) {
+    box.unlock();
+  }
+  else if (unlocked === 1) {
+    box.lock();
+  }  /*
+  if (box.locked !== true) {
+  	throw new Error("box.locked !== true");
+  }*/
+  return value;
+}
+
+withBoxUnlocked(function() {
+  box.content.push("gold piece");
+});
+
+try {
+  withBoxUnlocked(function() {
+    throw new Error("Pirates on the horizon! Abort!");
+  });
+} catch (e) {
+  console.log("Error raised: " + e);
+}
+console.log(box.locked);
+// → true
+box.unlock();
+
+withBoxUnlocked(function() {
+  box.content.push("gold piece");
+});
+console.log(box.locked);
+// → false
+
+
 
